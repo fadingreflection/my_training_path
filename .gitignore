@@ -1,0 +1,113 @@
+cat > .gitignore << 'EOF'
+# ============================
+#  Python / общее
+# ============================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dylib
+*.dll
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.log
+*.out
+*.err
+
+# ============================
+#  Виртуальное окружение
+# ============================
+venv/
+env/
+.venv/
+.env
+.env.local
+.env.*.local
+
+# ============================
+#  Редакторы и IDE
+# ============================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================
+#  Jupyter Notebooks
+# ============================
+.ipynb_checkpoints/
+# *.ipynb   # раскомментируйте, если не хотите версионировать ноутбуки
+
+# ============================
+#  Модели, адаптеры и большие файлы
+# ============================
+model/base/
+model/merged/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.pb
+*.onnx
+
+# ============================
+#  Кэш Hugging Face, Datasets, Transformers
+# ============================
+cache/
+.cache/
+~/.cache/huggingface/
+
+# ============================
+#  Результаты экспериментов и логи
+# ============================
+results/
+logs/
+experiments/*/
+!experiments/*/config.yaml
+
+# ============================
+#  Данные (датасеты)
+# ============================
+data/
+*.csv
+*.parquet
+*.jsonl
+
+# ============================
+#  Выводы бенчмарков
+# ============================
+benchmark_output/
+terminal_bench_results/
+cybench_results/
+seceval_results/
+
+# ============================
+#  Докер / временные файлы
+# ============================
+*.tmp
+docker-compose.override.yml
+Dockerfile.*.local
+
+# ============================
+#  Системные
+# ============================
+*.swp
+*.swo
+*.lock
+EOF
