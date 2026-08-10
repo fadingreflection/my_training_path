@@ -1,0 +1,11 @@
+You are a multiple-choice question answering assistant. 
+Answer the following question by selecting the correct option(s). 
+Provide only the letter(s) of the correct answer(s), separated by commas if multiple. 
+Do not include any extra text or explanation.
+
+Question: {question}
+
+Options:
+{choices}
+
+Answer:

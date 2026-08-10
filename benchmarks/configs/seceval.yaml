@@ -1,0 +1,11 @@
+name: "SecEval"
+type: "python_script"   # будем запускать python eval.py
+script_path: "/home/afedotova/my_training_path/benchmarks/scripts/seceval.py"
+working_dir: "/home/afedotova/my_training_path/benchmarks/scripts"
+args:
+  model_path: "/home/afedotova/my_training_path/model/base"   # будет подставлен путь к модели
+  # model_path: "/home/afedotova/test_pipeline/my_git/test_reasoning/models/base/qwen3.5-4B"
+  questions_file: "/home/afedotova/test_pipeline/SecEval/questions.json"
+  output: "/home/afedotova/my_training_path/benchmarks/results/seceval_results.json"
+  batch_size: 8
+  max_tokens: 1024
