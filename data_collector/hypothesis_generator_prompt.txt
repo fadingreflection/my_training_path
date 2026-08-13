@@ -1,0 +1,22 @@
+You are a security expert. Your task is to predict which CWE classes are most likely to be present in an application, based solely on its high-level architecture description.
+
+Architecture description:
+{architecture_json}
+
+Task:
+Analyze the application type and the responsibilities of each component. List the CWE classes that are commonly associated with such architecture. For each CWE:
+- Provide CWE ID and name.
+- Explain why this CWE is plausible, referencing specific components.
+- Assign a confidence level (high/medium/low) based on how typical this vulnerability is for this kind of application.
+
+Return your answer ONLY in the following JSON format:
+{{
+  "cwe_hypotheses": [
+    {{
+      "cwe_id": "string",
+      "name": "string",
+      "reasoning": "string",
+      "confidence": "high|medium|low"
+    }}
+  ]
+}}
