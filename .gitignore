@@ -110,4 +110,4 @@ Dockerfile.*.local
 *.swp
 *.swo
 *.lock
-EOF
+EOFdata_collector/joern/
