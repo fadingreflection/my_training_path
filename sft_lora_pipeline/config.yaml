@@ -1,0 +1,35 @@
+model_name_or_path: "/home/afedotova/my_training_path/model/base"
+data_path: "/home/afedotova/my_training_path/smoke_test_lora_sft/sft_data_smoke.jsonl"
+output_dir: "/home/afedotova/my_training_path/sft_lora_pipeline/output"
+
+validation_split: 0.1
+test_split: 0.1
+seed: 42
+max_seq_length: 512
+
+num_train_epochs: 3
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 4
+learning_rate: 2e-4
+warmup_steps: 5
+weight_decay: 0.01
+logging_steps: 2
+save_steps: 10
+eval_steps: 10
+save_total_limit: 3
+load_best_model_at_end: true
+metric_for_best_model: "eval_loss"
+greater_is_better: false
+
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.1
+lora_target_modules: ["q_proj", "v_proj"]
+
+use_tensorboard: true
+report_to: "tensorboard"
+evaluate_on_test: true
+
+# 👇 ЭТА СТРОКА НОВАЯ
+response_template: "<|im_start|>assistant"
