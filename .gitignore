@@ -97,6 +97,8 @@ terminal_bench_results/
 cybench_results/
 seceval_results/
 
+data_collector/joern/
+
 # ============================
 #  Докер / временные файлы
 # ============================
@@ -110,4 +112,4 @@ Dockerfile.*.local
 *.swp
 *.swo
 *.lock
-EOFdata_collector/joern/
+EOF
