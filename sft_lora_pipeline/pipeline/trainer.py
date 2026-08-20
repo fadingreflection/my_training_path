@@ -32,14 +32,42 @@ class SFTTrainerWrapper:
             task_type="CAUSAL_LM",
         )
 
-        # 2. Аргументы обучения (стандартные TrainingArguments)
-        training_args = TrainingArguments(
+        # # 2. Аргументы обучения (стандартные TrainingArguments)
+        # training_args = TrainingArguments(
+        #     output_dir=output_dir,
+        #     num_train_epochs=self.config.num_train_epochs,
+        #     per_device_train_batch_size=self.config.per_device_train_batch_size,
+        #     per_device_eval_batch_size=self.config.per_device_eval_batch_size,
+        #     gradient_accumulation_steps=self.config.gradient_accumulation_steps,
+        #     learning_rate=self.config.learning_rate,
+        #     warmup_steps=self.config.warmup_steps,
+        #     weight_decay=self.config.weight_decay,
+        #     logging_steps=self.config.logging_steps,
+        #     save_steps=self.config.save_steps,
+        #     eval_steps=self.config.eval_steps,
+        #     save_total_limit=self.config.save_total_limit,
+        #     load_best_model_at_end=self.config.load_best_model_at_end,
+        #     metric_for_best_model=self.config.metric_for_best_model,
+        #     greater_is_better=self.config.greater_is_better,
+        #     report_to=[self.config.report_to] if self.config.use_tensorboard else [],
+        #     bf16=True,
+        #     fp16=False,
+        #     eval_strategy="steps",
+        #     save_strategy="steps",
+        #     logging_strategy="steps",
+        #     remove_unused_columns=False,
+        #     seed=self.config.seed,
+
+        # )
+        from trl import SFTConfig
+
+        training_args = SFTConfig(
             output_dir=output_dir,
             num_train_epochs=self.config.num_train_epochs,
             per_device_train_batch_size=self.config.per_device_train_batch_size,
             per_device_eval_batch_size=self.config.per_device_eval_batch_size,
             gradient_accumulation_steps=self.config.gradient_accumulation_steps,
-            learning_rate=self.config.learning_rate,
+            learning_rate=float(self.config.learning_rate),
             warmup_steps=self.config.warmup_steps,
             weight_decay=self.config.weight_decay,
             logging_steps=self.config.logging_steps,
@@ -57,6 +85,14 @@ class SFTTrainerWrapper:
             logging_strategy="steps",
             remove_unused_columns=False,
             seed=self.config.seed,
+
+            # ----- SFT-специфичные параметры -----
+            loss_type="nll",                     # <-- ключевое: отключаем chunked_nll
+            max_length=self.config.max_seq_length,  # если у вас есть такой параметр
+            # packing=self.config.packing,         # если используете упаковку
+            # можно добавить другие параметры, например:
+            # dataset_text_field=self.config.dataset_text_field,
+            # formatting_func=...,
         )
 
         # 3. Создаём SFTTrainer
@@ -66,13 +102,13 @@ class SFTTrainerWrapper:
             args=training_args,
             train_dataset=self.train_dataset,
             eval_dataset=self.val_dataset,
-            tokenizer=self.tokenizer,      # <-- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
+            # tokenizer=self.tokenizer,      # <-- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
             peft_config=lora_config,
             # Эти параметры НЕ ПЕРЕДАЮТСЯ в SFTTrainer напрямую,
             # они должны быть в SFTConfig. Но для простоты мы
             # будем использовать дефолтные значения.
         )
-
+        print("СОЗДАЛИ")
         # 4. Возобновление из чекпоинта (отказоустойчивость)
         resume_from_checkpoint = None
         if os.path.exists(output_dir):

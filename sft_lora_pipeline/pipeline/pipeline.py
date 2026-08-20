@@ -68,6 +68,11 @@ class SFTLPipeline:
 
         model = builder.load_model()
         logger.info("✅ Модель загружена")
+            # После загрузки модели
+
+        # Добавляем недостающий атрибут (костыль)
+        if not hasattr(model.config, 'text_config'):
+            model.config.text_config = model.config
 
         # LoRA будет применена внутри SFTTrainer через peft_config
 
