@@ -17,7 +17,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
-      - ./projects:/projects:ro
+      - ./projects:/projects
       - ./exports:/exports:rw
       - joern_workspace:/app/workspace
     working_dir: /app
