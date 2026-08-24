@@ -1,17 +1,17 @@
-model_name_or_path: "/home/afedotova/my_training_path/model/base"
-data_path: "/home/afedotova/my_training_path/smoke_test_lora_sft/sft_data_smoke.jsonl"
-output_dir: "/home/afedotova/my_training_path/sft_lora_pipeline/output"
+model_name_or_path: "../models/base"
+data_path: "../smoke_test_lora_sft/sft_data_prompt_completion.jsonl" #sft_data_prompt_completion
+output_dir: "../sft_lora_pipeline/output"
 
 validation_split: 0.1
 test_split: 0.1
 seed: 42
-max_seq_length: 512
+max_seq_length: 2048
 
-num_train_epochs: 3
-per_device_train_batch_size: 4
-per_device_eval_batch_size: 4
+num_train_epochs: 10
+per_device_train_batch_size: 1
+per_device_eval_batch_size: 1
 gradient_accumulation_steps: 4
-learning_rate: 2e-4
+learning_rate: 2e-3
 warmup_steps: 5
 weight_decay: 0.01
 logging_steps: 2
@@ -30,6 +30,12 @@ lora_target_modules: ["q_proj", "v_proj"]
 use_tensorboard: true
 report_to: "tensorboard"
 evaluate_on_test: true
+evaluate_on_train: true
 
 # 👇 ЭТА СТРОКА НОВАЯ
 response_template: "<|im_start|>assistant"
+resume_from_checkpoint: false 
+
+# Ранняя остановка
+early_stopping_patience: 5     # количество шагов без улучшения
+early_stopping_threshold: 0.0  # минимальное изменение для считаемого улучшения (0.0 – любое улучшение)
