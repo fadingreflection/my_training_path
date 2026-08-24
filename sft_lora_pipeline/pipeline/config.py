@@ -1,6 +1,8 @@
-import yaml
 from dataclasses import dataclass
 from typing import List
+
+import yaml
+
 
 @dataclass
 class Config:
@@ -33,6 +35,10 @@ class Config:
     report_to: str
     evaluate_on_test: bool
     response_template: str  # <-- НОВОЕ
+    resume_from_checkpoint: bool | str = False   # или False, или путь
+    evaluate_on_train: bool = True
+    early_stopping_patience: int = 0
+    early_stopping_threshold: float = 0.0
 
     @classmethod
     def from_yaml(cls, path: str):
