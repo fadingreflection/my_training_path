@@ -1,31 +1,31 @@
 model_name_or_path: "../models/base"
 data_path: "../smoke_test_lora_sft/sft_data_prompt_completion.jsonl" #sft_data_prompt_completion
-output_dir: "../sft_lora_pipeline/output"
+output_dir: "../sft_lora_pipeline/output_smoke_clean"
 
 validation_split: 0.1
 test_split: 0.1
 seed: 42
 max_seq_length: 2048
 
-num_train_epochs: 10
+num_train_epochs: 2
 per_device_train_batch_size: 1
 per_device_eval_batch_size: 1
-gradient_accumulation_steps: 4
-learning_rate: 2e-3
-warmup_steps: 5
-weight_decay: 0.01
-logging_steps: 2
-save_steps: 10
-eval_steps: 10
+gradient_accumulation_steps: 16
+learning_rate: 5e-4
+warmup_steps: 20
+weight_decay: 0.1
+logging_steps: 5
+save_steps: 5 #25 
+eval_steps: 5 #25 
 save_total_limit: 3
 load_best_model_at_end: true
 metric_for_best_model: "eval_loss"
 greater_is_better: false
 
-lora_r: 16
-lora_alpha: 32
-lora_dropout: 0.1
-lora_target_modules: ["q_proj", "v_proj"]
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.2
+lora_target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 
 use_tensorboard: true
 report_to: "tensorboard"
@@ -37,5 +37,8 @@ response_template: "<|im_start|>assistant"
 resume_from_checkpoint: false 
 
 # Ранняя остановка
-early_stopping_patience: 5     # количество шагов без улучшения
+early_stopping_patience: 3     # количество шагов без улучшения
 early_stopping_threshold: 0.0  # минимальное изменение для считаемого улучшения (0.0 – любое улучшение)
+eval_sample_size: null
+train_eval_sample_size: 0
+data_limit: 0
