@@ -64,6 +64,7 @@ class SFTTrainerWrapper:
             max_length=self.config.max_seq_length,
             packing=False,
             loss_type="nll",
+            gradient_checkpointing=True,
         )
 
         # Early stopping callback
