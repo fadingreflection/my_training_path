@@ -26,7 +26,11 @@ class Evaluator:
 
         self.model.eval()
         random.seed(self.config.seed)
-        sample = random.sample(raw_test_records, min(len(raw_test_records), sample_size))
+        # Определяем выборку
+        if sample_size is None or sample_size >= len(raw_test_records):
+            sample = raw_test_records
+        else:
+            sample = random.sample(raw_test_records, sample_size)
 
         results = []
         valid_json_count = 0
@@ -71,6 +75,9 @@ class Evaluator:
                 "is_valid_json": is_valid_json,
             })
 
+            # Очистка кеша после каждого примера, чтобы избежать накопления памяти
+            torch.cuda.empty_cache()
+
         # Save results
         log_path = self.log_dir / log_file
         with open(log_path, "w", encoding="utf-8") as f:
@@ -112,7 +119,23 @@ class Evaluator:
         return prompt, target
 
     def _generate_response(self, prompt):
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+        """
+        Генерирует ответ модели, обрезая промпт до разумной длины,
+        чтобы избежать OOM на длинных кодах.
+        """
+        # Очистка кеша перед генерацией
+        torch.cuda.empty_cache()
+
+        # Определяем максимальную длину промпта (из конфига или 512 по умолчанию)
+        max_prompt_length = getattr(self.config, 'max_prompt_length', 512)
+
+        inputs = self.tokenizer(
+            prompt,
+            return_tensors="pt",
+            truncation=True,
+            max_length=max_prompt_length,
+        ).to(self.model.device)
+
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
@@ -120,7 +143,12 @@ class Evaluator:
                 do_sample=False,
                 pad_token_id=self.tokenizer.eos_token_id
             )
+
         generated_full = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+        # Очистка кеша после генерации
+        torch.cuda.empty_cache()
+
         return generated_full
 
     def _extract_findings(self, target):
