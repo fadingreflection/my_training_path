@@ -111,10 +111,13 @@ class SFTLPipeline:
 
         # 6. Evaluation on test
         if self.config.evaluate_on_test and test_rec:
-            self._evaluate(test_rec, 20, "test_predictions.jsonl")
+            sample_size = getattr(self.config, 'eval_sample_size', None)
+            # если None, передаём None, и evaluator возьмёт все записи
+            self._evaluate(test_rec, sample_size, "test_predictions.jsonl")
 
         # 7. Evaluation on train (optional)
         if self.config.evaluate_on_train and train_rec:
-            self._evaluate(train_rec, 20, "train_predictions.jsonl")
+            sample_size = getattr(self.config, 'train_eval_sample_size', None)
+            self._evaluate(train_rec, sample_size, "train_predictions.jsonl")
 
         logger.info("Pipeline finished successfully")
