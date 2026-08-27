@@ -122,3 +122,25 @@ Dockerfile.*.local
 *.swo
 *.lock
 EOF
+
+# TensorBoard logs
+*.tfevents*
+events.out.tfevents.*
+
+# Чекпоинты и выходные папки
+output/
+logs/
+*.log
+checkpoint-*/
+
+*.jsonl
+*.json
+*.jinja
+
+*.jsonl
+/models/
+__pycache__/
+*.pyc
+.env
+.vscode/
+.idea/
