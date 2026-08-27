@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List  # noqa: UP035
 
 import yaml
 
@@ -39,6 +39,9 @@ class Config:
     evaluate_on_train: bool = True
     early_stopping_patience: int = 0
     early_stopping_threshold: float = 0.0
+    eval_sample_size: int = None 
+    train_eval_sample_size: int = 20 
+    data_limit: int = 0
 
     @classmethod
     def from_yaml(cls, path: str):
