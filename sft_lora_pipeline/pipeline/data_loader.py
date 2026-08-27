@@ -15,11 +15,14 @@ class DataLoader:
 
     def load_raw(self, path: str) -> List[Dict]:
         records = []
+        limit = getattr(self.config, 'data_limit', 0)
         with open(path, "r", encoding="utf-8") as f:
             for line in f:
                 if line.strip():
                     records.append(json.loads(line))
-        logger.info(f"Loaded {len(records)} records from {path}")
+                    if limit and len(records) >= limit:
+                        break
+        logger.info(f"Loaded {len(records)} records from {path} (limit={limit if limit else 'all'})")
         return records
 
     def split_data(self, records: List[Dict]) -> Tuple[List[Dict], List[Dict], List[Dict]]:
