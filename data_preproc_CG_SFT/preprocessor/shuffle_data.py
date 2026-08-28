@@ -52,7 +52,7 @@ def shuffle_dataset(
     print(f"🎉 Готово! Сохранено записей: {len(records)}")
 
 if __name__ == "__main__":
-    input_path = "/home/afedotova/my_training_path/data_preproc_CG_SFT/raw_data_parsed.jsonl"
+    input_path = "../data_preproc_CG_SFT/preprocessor/output/raw_data_parsed.jsonl"
     output_path = input_path.replace(".jsonl", "_shuffled.jsonl")  # добавляем _shuffled
 
     # === НАСТРОЙКА ===
