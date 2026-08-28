@@ -1,12 +1,14 @@
 import logging
 import os
 import subprocess
+
 import torch
+
 from .config import Config
 from .data_loader import DataLoader
-from .model_builder import ModelBuilder
-from .trainer import SFTTrainerWrapper   # вместо SFTTrainer
 from .evaluator import Evaluator
+from .model_builder import ModelBuilder
+from .trainer import SFTTrainerWrapper
 
 logger = logging.getLogger(__name__)
 
@@ -26,15 +28,7 @@ class SFTLPipeline:
             ]
         )
 
-    def run(self):
-        logger.info("🚀 Запуск SFT пайплайна")
-
-        # 1. GPU проверка
-        if not torch.cuda.is_available():
-            raise RuntimeError("❌ GPU не доступен")
-        logger.info(f"✅ Доступно GPU: {torch.cuda.device_count()}")
-
-        # 1.5 Выбор свободного GPU
+    def _get_free_gpu(self):
         try:
             output = subprocess.check_output(
                 ["nvidia-smi", "--query-gpu=index,memory.free", "--format=csv,noheader,nounits"],
@@ -52,55 +46,78 @@ class SFTLPipeline:
                 if free > max_free:
                     max_free = free
                     best_gpu = idx
-            if best_gpu is not None:
-                os.environ["CUDA_VISIBLE_DEVICES"] = str(best_gpu)
-                logger.info(f"✅ Выбран GPU {best_gpu} с {max_free} МБ свободной памяти")
-            else:
-                logger.warning("⚠️ Не удалось определить свободный GPU, используем стандартное поведение")
+            return best_gpu, max_free
         except Exception as e:
-            logger.warning(f"⚠️ Ошибка при выборе GPU: {e}. Используем стандартное поведение")
+            logger.warning(f"Error selecting GPU: {e}. Using default behavior.")
+            return None, 0
 
-        # 2. Загрузка модели и токенизатора
-        logger.info("⏳ Загрузка модели и токенизатора...")
+    def _evaluate(self, records, sample_size, log_file):
+        if not records:
+            logger.warning(f"Records list empty, skipping evaluation to {log_file}")
+            return None
+        evaluator = Evaluator(self.config, self.model, self.tokenizer)
+        metrics = evaluator.evaluate_and_log(
+            raw_test_records=records,
+            sample_size=sample_size,
+            log_file=log_file
+        )
+        logger.info(f"Evaluation results: json_accuracy={metrics.get('json_accuracy', 0):.2%}, "
+                    f"cwe_accuracy={metrics.get('cwe_accuracy', 0):.2%}")
+        return metrics
+
+    def run(self):
+        logger.info("Starting SFT pipeline")
+
+        # 1. GPU check
+        if not torch.cuda.is_available():
+            raise RuntimeError("GPU not available")
+        logger.info(f"Available GPUs: {torch.cuda.device_count()}")
+
+        # 2. Select free GPU
+        best_gpu, max_free = self._get_free_gpu()
+        if best_gpu is not None:
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(best_gpu)
+            logger.info(f"Selected GPU {best_gpu} with {max_free} MB free memory")
+        else:
+            logger.warning("Could not determine free GPU, using default behavior")
+
+        # 3. Load model and tokenizer
+        logger.info("Loading model and tokenizer...")
         builder = ModelBuilder(self.config)
-        tokenizer = builder.load_tokenizer()
-        logger.info("✅ Токенизатор загружен")
+        self.tokenizer = builder.load_tokenizer()
+        logger.info("Tokenizer loaded")
 
-        model = builder.load_model()
-        logger.info("✅ Модель загружена")
-            # После загрузки модели
+        self.model = builder.load_model()
+        logger.info("Model loaded")
 
-        # Добавляем недостающий атрибут (костыль)
-        if not hasattr(model.config, 'text_config'):
-            model.config.text_config = model.config
-
-        # LoRA будет применена внутри SFTTrainer через peft_config
-
-        # 3. Данные
-        logger.info("⏳ Загрузка данных...")
-        loader = DataLoader(self.config, tokenizer)
+        # 4. Load and split data
+        logger.info("Loading data...")
+        loader = DataLoader(self.config, self.tokenizer)
         records = loader.load_raw(self.config.data_path)
-        logger.info(f"✅ Загружено записей: {len(records)}")
+        if not records:
+            raise ValueError("No data loaded from data_path")
+        logger.info(f"Loaded {len(records)} records")
 
         train_rec, val_rec, test_rec = loader.split_data(records)
-        logger.info(f"✅ Разбивка: train={len(train_rec)}, val={len(val_rec)}, test={len(test_rec)}")
+        logger.info(f"Split: train={len(train_rec)}, val={len(val_rec)}, test={len(test_rec)}")
 
         train_ds, val_ds, test_ds = loader.prepare_datasets(train_rec, val_rec, test_rec)
-        logger.info("✅ Датасеты подготовлены")
+        logger.info("Datasets prepared")
 
-        # 4. Обучение
-        logger.info("🔥 Запуск обучения...")
-        trainer_obj = SFTTrainerWrapper(self.config, model, tokenizer, train_ds, val_ds)
-        trainer = trainer_obj.train()
+        # 5. Training
+        logger.info("Starting training...")
+        trainer_obj = SFTTrainerWrapper(self.config, self.model, self.tokenizer, train_ds, val_ds)
+        self.trainer = trainer_obj.train()
 
-        # 5. Оценка
-        evaluator = Evaluator(self.config, model, tokenizer)
-        if self.config.evaluate_on_test and test_ds:
-            json_acc = evaluator.evaluate_json_structure(test_ds, sample_size=20)
-            logger.info(f"📈 JSON accuracy на тесте: {json_acc:.2%}")
+        # 6. Evaluation on test
+        if self.config.evaluate_on_test and test_rec:
+            sample_size = getattr(self.config, 'eval_sample_size', None)
+            # если None, передаём None, и evaluator возьмёт все записи
+            self._evaluate(test_rec, sample_size, "test_predictions.jsonl")
 
-        if test_ds:
-            test_loss = trainer.evaluate(test_ds)["eval_loss"]
-            logger.info(f"📉 Test loss: {test_loss:.4f}")
+        # 7. Evaluation on train (optional)
+        if self.config.evaluate_on_train and train_rec:
+            sample_size = getattr(self.config, 'train_eval_sample_size', None)
+            self._evaluate(train_rec, sample_size, "train_predictions.jsonl")
 
-        logger.info("🎉 Пайплайн успешно завершён.")
+        logger.info("Pipeline finished successfully")
