@@ -142,9 +142,9 @@ class DataPreprocessor:
 
 if __name__ == "__main__":
     # === НАСТРОЙКА ===
-    BIGVUL_PATH = "../my_training_path/raw_data/bigvul"
-    CODEVULN_PATH = "../my_training_path/raw_data/Code-Vulnerability-FineTune"
-    OUTPUT_PATH = "../my_training_path/data_preproc_CG_SFT/raw_data_parsed_shuffled_balanced.jsonl"
+    BIGVUL_PATH = "../raw_data/bigvul"
+    CODEVULN_PATH = "../raw_data/Code-Vulnerability-FineTune"
+    OUTPUT_PATH = "../data_preproc_CG_SFT/raw_data_parsed_shuffled_balanced.jsonl"
 
     # Максимальное количество примеров на CWE
     MAX_PER_CWE = 100
