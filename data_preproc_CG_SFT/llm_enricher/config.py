@@ -10,10 +10,10 @@ MAX_TOKENS = 4096
 TEMPERATURE = 0.2
 
 # --- Concurrency and logging ---
-MAX_WORKERS = 1          # число параллельных запросов
-RATE_LIMIT_SLEEP = 2.0   # пауза между запросами (сек)
-LOG_FILE = "logs/teacher_response.log"
+MAX_WORKERS = 10          # число параллельных запросов
+RATE_LIMIT_SLEEP = 0.5   # пауза между запросами (сек)
+LOG_FILE = "./logs/teacher_response.log"
 
 # --- File paths ---
-RAW_DATA_PATH = "/home/afedotova/my_training_path/data_preproc_CG_SFT/raw_data_parsed.jsonl"
-OUTPUT_PATH = "/home/afedotova/my_training_path/sft_datasets_ready/sft_data.jsonl"
+RAW_DATA_PATH = "../preprocessor/output/raw_data_parsed_shuffled_balanced.jsonl"
+OUTPUT_PATH = "./output/sft_data_enriched.jsonl"
