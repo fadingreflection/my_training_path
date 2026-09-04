@@ -1,0 +1,11 @@
+# Optional GPU-only extras. These require a CUDA-capable GPU and are NOT
+# installed in the default (CPU) Cloud Agent environment.
+#
+# Install on a GPU host after installing a CUDA build of torch:
+#   pip install -r requirements-gpu.txt
+
+# High-throughput inference used by benchmarks/scripts (seceval / eval_http_batch)
+vllm
+
+# 4-bit / QLoRA quantization (BitsAndBytesConfig in sft_lora_pipeline)
+bitsandbytes

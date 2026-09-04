@@ -1,0 +1,33 @@
+# Core runtime dependencies for the my_training_path SFT / LoRA pipeline.
+#
+# torch is pinned to the CPU build so the environment installs on GPU-less
+# machines (such as Cloud Agent VMs). For GPU training, replace the two lines
+# below with the appropriate CUDA build, e.g.:
+#   pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cu124
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.14.0+cpu
+
+# Hugging Face training stack (SFT + LoRA)
+transformers==5.16.1
+trl==1.12.0
+peft==0.20.0
+datasets==5.0.1
+accelerate==1.14.0
+tokenizers==0.23.2
+safetensors==0.8.0
+huggingface-hub==1.30.0
+
+# Data handling / config / utilities
+numpy==2.5.2
+PyYAML==6.0.3
+tqdm==4.70.0
+sentencepiece==0.2.2
+protobuf==7.36.1
+
+# Experiment tracking (config uses report_to: tensorboard)
+tensorboard==2.21.0
+
+# Data collection / enrichment / LLM-as-judge (OpenRouter / OpenAI compatible)
+openai==3.8.0
+requests==2.34.2
+json-repair==0.63.4
