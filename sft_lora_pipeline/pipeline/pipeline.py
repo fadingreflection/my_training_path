@@ -90,18 +90,38 @@ class SFTLPipeline:
         self.model = builder.load_model()
         logger.info("Model loaded")
 
-        # 4. Load and split data
+        # 4. Load train pool; val = 10% от него (для eval_loss). Holdout — только финальный тест.
         logger.info("Loading data...")
         loader = DataLoader(self.config, self.tokenizer)
         records = loader.load_raw(self.config.data_path)
         if not records:
             raise ValueError("No data loaded from data_path")
-        logger.info(f"Loaded {len(records)} records")
+        logger.info(f"Loaded {len(records)} train-pool records from {self.config.data_path}")
+
+        holdout_path = getattr(self.config, "holdout_data_path", None)
+        holdout_rec = []
+        if holdout_path:
+            holdout_rec = loader.load_raw(holdout_path)
+            logger.info(f"Loaded {len(holdout_rec)} holdout records from {holdout_path}")
+            # убрать точные дубликаты holdout из train-pool (content leak)
+            before = len(records)
+            records = loader.drop_content_overlap(records, holdout_rec)
+            dropped = before - len(records)
+            if dropped:
+                logger.warning(f"Dropped {dropped} train-pool rows with exact prompt+completion overlap vs holdout")
 
         train_rec, val_rec, test_rec = loader.split_data(records)
-        logger.info(f"Split: train={len(train_rec)}, val={len(val_rec)}, test={len(test_rec)}")
+        # финальный тест — только holdout; random test_split должен быть 0
+        if holdout_rec:
+            if test_rec:
+                logger.warning(
+                    f"test_split produced {len(test_rec)} rows, but holdout_data_path is set — "
+                    f"using holdout only for final test"
+                )
+            test_rec = holdout_rec
+        logger.info(f"Split: train={len(train_rec)}, val={len(val_rec)}, holdout_test={len(test_rec)}")
 
-        train_ds, val_ds, test_ds = loader.prepare_datasets(train_rec, val_rec, test_rec)
+        train_ds, val_ds, _ = loader.prepare_datasets(train_rec, val_rec, [])
         logger.info("Datasets prepared")
 
         # 5. Training
@@ -109,11 +129,10 @@ class SFTLPipeline:
         trainer_obj = SFTTrainerWrapper(self.config, self.model, self.tokenizer, train_ds, val_ds)
         self.trainer = trainer_obj.train()
 
-        # 6. Evaluation on test
+        # 6. Evaluation on holdout test
         if self.config.evaluate_on_test and test_rec:
             sample_size = getattr(self.config, 'eval_sample_size', None)
-            # если None, передаём None, и evaluator возьмёт все записи
-            self._evaluate(test_rec, sample_size, "test_predictions.jsonl")
+            self._evaluate(test_rec, sample_size, "holdout_predictions.jsonl")
 
         # 7. Evaluation on train (optional)
         if self.config.evaluate_on_train and train_rec:

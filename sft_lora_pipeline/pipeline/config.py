@@ -42,6 +42,7 @@ class Config:
     eval_sample_size: int = None 
     train_eval_sample_size: int = 20 
     data_limit: int = 0
+    holdout_data_path: str | None = None
 
     @classmethod
     def from_yaml(cls, path: str):

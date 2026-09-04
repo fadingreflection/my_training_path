@@ -1,9 +1,10 @@
 model_name_or_path: "../models/base"
-data_path: "../smoke_test_lora_sft/sft_data_prompt_completion.jsonl" #sft_data_prompt_completion
-output_dir: "../sft_lora_pipeline/output_smoke_clean"
+data_path: "../sft_datasets_ready/train_pool.jsonl"
+holdout_data_path: "../sft_datasets_ready/test_holdout_cwe_balanced.jsonl"
+output_dir: "../sft_lora_pipeline/output_trainpool_holdout"
 
 validation_split: 0.1
-test_split: 0.1
+test_split: 0.0   # holdout только как финальный тест, не из random split
 seed: 42
 max_seq_length: 2048
 

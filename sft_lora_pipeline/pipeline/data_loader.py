@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 from typing import Dict, List, Tuple  # noqa: UP035
@@ -25,6 +26,17 @@ class DataLoader:
         logger.info(f"Loaded {len(records)} records from {path} (limit={limit if limit else 'all'})")
         return records
 
+    @staticmethod
+    def _content_key(rec: Dict) -> str:
+        prompt = rec.get("prompt") or ""
+        completion = rec.get("completion") or ""
+        return hashlib.sha1(f"{prompt}||{completion}".encode("utf-8")).hexdigest()
+
+    def drop_content_overlap(self, records: List[Dict], reference: List[Dict]) -> List[Dict]:
+        """Удаляет из records строки с точным совпадением prompt+completion с reference."""
+        banned = {self._content_key(r) for r in reference}
+        return [r for r in records if self._content_key(r) not in banned]
+
     def split_data(self, records: List[Dict]) -> Tuple[List[Dict], List[Dict], List[Dict]]:
         if not records:
             raise ValueError("Cannot split empty records list.")
@@ -39,7 +51,7 @@ class DataLoader:
 
         train_indices = indices[:n - val_size - test_size]
         val_indices = indices[n - val_size - test_size : n - test_size]
-        test_indices = indices[n - test_size:]
+        test_indices = indices[n - test_size:] if test_size > 0 else []
 
         logger.info(f"Split: train={len(train_indices)}, val={len(val_indices)}, test={len(test_indices)}")
         return (
