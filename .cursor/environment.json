@@ -1,0 +1,4 @@
+{
+  "name": "my_training_path",
+  "install": "bash .cursor/install.sh"
+}
