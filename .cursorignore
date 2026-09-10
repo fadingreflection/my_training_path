@@ -1,0 +1,4 @@
+# Secrets — the agent cannot read these files.
+.env
+.env.local
+.env.*.local
