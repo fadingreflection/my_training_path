@@ -1,0 +1,48 @@
+# Continue LoRA from accepted explain-CWE v1 adapter on DeepSeek-v4.1-flash hits.
+# Writes ONLY to output_dir. init_adapter is read-only.
+# Do not name this output_dir as a child of the baseline adapter path.
+model_name_or_path: "../models/base"
+init_adapter: "../sft_lora_pipeline/output_explain_cwe_qwen17b"
+data_path: "../explain_cwe_map/sft/ds41flash_continue/train.jsonl"
+val_data_path: "../explain_cwe_map/sft/glm53flash_hits/val.jsonl"
+output_dir: "../sft_lora_pipeline/output_explain_cwe_ds_continue"
+
+validation_split: 0.0
+test_split: 0.0
+seed: 42
+max_seq_length: 4096
+apply_chat_template: true
+
+num_train_epochs: 2
+per_device_train_batch_size: 1
+per_device_eval_batch_size: 1
+gradient_accumulation_steps: 16
+learning_rate: 1.0e-4
+warmup_steps: 8
+weight_decay: 0.1
+logging_steps: 5
+save_steps: 10
+eval_steps: 10
+save_total_limit: 3
+load_best_model_at_end: true
+metric_for_best_model: "eval_loss"
+greater_is_better: false
+
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+use_tensorboard: true
+report_to: "tensorboard"
+evaluate_on_test: false
+evaluate_on_train: false
+
+response_template: "<|im_start|>assistant"
+resume_from_checkpoint: false
+
+early_stopping_patience: 4
+early_stopping_threshold: 0.0
+eval_sample_size: null
+train_eval_sample_size: 0
+data_limit: 0

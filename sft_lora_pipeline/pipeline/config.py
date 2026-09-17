@@ -1,7 +1,10 @@
-from dataclasses import dataclass
+import logging
+from dataclasses import dataclass, fields
 from typing import List  # noqa: UP035
 
 import yaml
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,13 +42,19 @@ class Config:
     evaluate_on_train: bool = True
     early_stopping_patience: int = 0
     early_stopping_threshold: float = 0.0
-    eval_sample_size: int = None 
-    train_eval_sample_size: int = 20 
+    eval_sample_size: int = None
+    train_eval_sample_size: int = 20
     data_limit: int = 0
     holdout_data_path: str | None = None
+    val_data_path: str | None = None
+    apply_chat_template: bool = False
 
     @classmethod
     def from_yaml(cls, path: str):
         with open(path, "r") as f:
-            data = yaml.safe_load(f)
-        return cls(**data)
+            data = yaml.safe_load(f) or {}
+        known = {f.name for f in fields(cls)}
+        unknown = sorted(k for k in data if k not in known)
+        if unknown:
+            logger.warning("Ignoring unknown config keys: %s", unknown)
+        return cls(**{k: v for k, v in data.items() if k in known})

@@ -1,0 +1,28 @@
+# Install order matters for CUDA:
+#   python3.12 -m venv .venv && source .venv/bin/activate
+#   pip install -U pip setuptools wheel
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+#   pip install -r requirements.txt
+#
+# Server target: 2x NVIDIA A100-PCIE-40GB, driver 570.x, CUDA toolkit 12.8
+# Reconstructed from root history (cu128) + pipeline imports; related freeze had cu121 on another project.
+
+transformers>=4.51.0
+peft>=0.14.0
+trl>=0.15.0
+accelerate>=1.0.0
+bitsandbytes>=0.45.0
+datasets>=3.0.0
+sentencepiece
+protobuf
+safetensors
+huggingface_hub
+pyyaml
+tqdm
+tensorboard
+scipy
+einops
+openai
+requests
+packaging
+numpy

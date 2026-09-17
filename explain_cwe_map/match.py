@@ -50,14 +50,27 @@ def extract_levels(text: str) -> dict[str, str]:
     return out
 
 
-def score(gold_raw: str | None, mapping_text: str, safe: bool) -> dict:
+def score(
+    gold_raw: str | None,
+    mapping_text: str,
+    *,
+    said_safe: bool = False,
+    said_insufficient: bool = False,
+) -> dict:
+    """Score one mapping. Abstaining (SAFE or INSUFFICIENT_INFO) predicts nothing.
+
+    Both abstain flags are reported separately so callers can tell a refusal
+    apart from a wrong CWE; either one suppresses predictions, because the
+    two-step chain skips the mapping turn on an abstain verdict.
+    """
+    abstained = said_safe or said_insufficient
     gold = norm_cwe(gold_raw)
     gold_canon = map_cwe(gold) if gold else None
     gold_fam = map_family(gold) if gold else None
-    pred = extract_cwes(mapping_text) if not safe else []
+    pred = extract_cwes(mapping_text) if not abstained else []
     pred_canon = [map_cwe(c) or c for c in pred]
     pred_fam = [map_family(c) for c in pred if map_family(c)]
-    levels = extract_levels(mapping_text) if not safe else {}
+    levels = extract_levels(mapping_text) if not abstained else {}
 
     hit_raw = bool(gold) and gold in pred
     hit_canon = bool(gold_canon) and gold_canon in pred_canon
@@ -71,7 +84,8 @@ def score(gold_raw: str | None, mapping_text: str, safe: bool) -> dict:
         "pred_canonical": [c for c in pred_canon if c],
         "pred_families": pred_fam,
         "pred_levels": levels,
-        "said_safe": safe,
+        "said_safe": said_safe,
+        "said_insufficient": said_insufficient,
         "hit_raw": hit_raw,
         "hit_canonical": hit_canon,
         "hit_family": hit_family,

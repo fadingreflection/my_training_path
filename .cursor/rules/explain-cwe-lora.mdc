@@ -1,0 +1,22 @@
+---
+description: Successful explain-CWE LoRA baseline on Qwen3-1.7B; do not re-run this experiment.
+alwaysApply: true
+---
+
+# Explain-CWE LoRA v1 — accepted baseline (2026-09-11)
+
+Experiment **succeeded**. Do not retrain this config as a sanity check. Treat it as the student baseline.
+
+- Base: `models/base` (Qwen3-1.7B)
+- Adapter: `sft_lora_pipeline/output_explain_cwe_qwen17b` (best = checkpoint-204)
+- Train: `explain_cwe_map/sft/glm53flash_hits/train.jsonl` (1084 turns, teacher hits only)
+- Holdout: frozen 140 ids in `explain_cwe_map/sft/glm53flash_hits/holdout_ids.jsonl`
+- Metric: `any_level_hit` via `explain_cwe_map/eval_local.py`
+
+Holdout (same 140 ids): **base 0.136** (19) → **LoRA 0.421** (59) vs **teacher 0.457** (64). Family ~teacher (0.393 vs 0.407). Raw still behind (0.186 vs 0.286).
+
+Teacher was **not** re-run; 0.457 is the original GLM-5.3-flash generations scored against gold. Holdout is stratified from the full teacher pool (hits+misses); train/val are hits minus holdout. Teacher is not 100% on holdout by design.
+
+Gains are in memory/integer CWEs (119/125/190/416/476/787). Zero on gold CWE-254/189/399/264 (no SFT hits). Regression vs base on CWE-200. LoRA never `said_safe` (SFT was hits-only).
+
+Next gains will not come from more epochs on the same hits. Need exact mapping, non-MEM / missing gold classes, or abstain data.

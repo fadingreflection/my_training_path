@@ -110,7 +110,20 @@ class SFTLPipeline:
             if dropped:
                 logger.warning(f"Dropped {dropped} train-pool rows with exact prompt+completion overlap vs holdout")
 
-        train_rec, val_rec, test_rec = loader.split_data(records)
+        val_path = getattr(self.config, "val_data_path", None)
+        if val_path:
+            val_rec = loader.load_raw(val_path)
+            train_rec, test_rec = records, []
+            logger.info(f"Using val_data_path: train={len(train_rec)}, val={len(val_rec)}")
+        else:
+            train_rec, val_rec, test_rec = loader.split_data(records)
+
+        if getattr(self.config, "apply_chat_template", False):
+            train_rec = loader.apply_chat_prompts(train_rec)
+            if val_rec:
+                val_rec = loader.apply_chat_prompts(val_rec)
+            if holdout_rec:
+                holdout_rec = loader.apply_chat_prompts(holdout_rec)
         # финальный тест — только holdout; random test_split должен быть 0
         if holdout_rec:
             if test_rec:

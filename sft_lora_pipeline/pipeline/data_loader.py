@@ -60,12 +60,38 @@ class DataLoader:
             [records[i] for i in test_indices]
         )
 
+    def apply_chat_prompts(self, records: List[Dict]) -> List[Dict]:
+        """Wrap each prompt as a user turn, matching explain_cwe_map/eval_local.py."""
+        wrapped = []
+        for rec in records:
+            rec = dict(rec)
+            messages = [{"role": "user", "content": rec["prompt"]}]
+            kwargs = {"tokenize": False, "add_generation_prompt": True}
+            try:
+                rec["prompt"] = self.tokenizer.apply_chat_template(
+                    messages, enable_thinking=False, **kwargs
+                )
+            except TypeError:
+                rec["prompt"] = self.tokenizer.apply_chat_template(messages, **kwargs)
+            wrapped.append(rec)
+        logger.info("Applied chat template to %d records (enable_thinking=False)", len(wrapped))
+        return wrapped
+
+    @staticmethod
+    def _sft_rows(records: List[Dict] | None) -> List[Dict] | None:
+        if not records:
+            return None
+        return [{"prompt": r["prompt"], "completion": r["completion"]} for r in records]
+
     def prepare_datasets(self, train_records, val_records, test_records):
         # Для формата Prompt-Completion оставляем поля prompt и completion.
         # Токенизация будет выполнена внутри SFTTrainer.
-        train_dataset = Dataset.from_list(train_records) if train_records else None
-        val_dataset = Dataset.from_list(val_records) if val_records else None
-        test_dataset = Dataset.from_list(test_records) if test_records else None
+        train_rows = self._sft_rows(train_records)
+        val_rows = self._sft_rows(val_records)
+        test_rows = self._sft_rows(test_records)
+        train_dataset = Dataset.from_list(train_rows) if train_rows else None
+        val_dataset = Dataset.from_list(val_rows) if val_rows else None
+        test_dataset = Dataset.from_list(test_rows) if test_rows else None
 
         logger.info("Datasets prepared (no tokenization applied yet).")
         return train_dataset, val_dataset, test_dataset
