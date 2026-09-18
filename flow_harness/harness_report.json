@@ -1,0 +1,93 @@
+{
+  "version": "v0",
+  "version_label": "v0-9641eead",
+  "spec_hash": "9641eead0b859b16441bfb27ac6c8be44c24361da66d2fc0ef7c83d53d7a7830",
+  "normalization": [
+    "strip",
+    "unify_quotes",
+    "unify_dashes",
+    "collapse_whitespace"
+  ],
+  "normalization_fingerprint": "8cdd16c7889a2b0d1cfb0a66990454ab6ebca5e0839c9e2c177f847ed07d01b3",
+  "dispersion_mode": "temperature_fallback",
+  "evaluate_seconds": 0.334,
+  "metrics": {
+    "n_inputs": 200,
+    "n_rows": 600,
+    "unparsed_count": 0,
+    "truncation_rate": {
+      "value": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "repetition_ratio": {
+      "value": 0.999893,
+      "ci95": [
+        0.99977,
+        0.999975
+      ]
+    },
+    "identifier_precision": {
+      "value": 0.202709,
+      "ci95": [
+        0.192101,
+        0.212264
+      ]
+    },
+    "quote_precision": {
+      "value": 0.79242,
+      "ci95": [
+        0.755111,
+        0.829316
+      ]
+    },
+    "verdict_distribution": {
+      "VULNERABLE": 0.87,
+      "SAFE": 0.095,
+      "INSUFFICIENT": 0.035,
+      "UNPARSED": 0.0
+    },
+    "verdict_distribution_ci": {
+      "VULNERABLE": {
+        "value": 0.87,
+        "ci95": [
+          0.82,
+          0.915
+        ]
+      },
+      "SAFE": {
+        "value": 0.095,
+        "ci95": [
+          0.059875,
+          0.135
+        ]
+      },
+      "INSUFFICIENT": {
+        "value": 0.035,
+        "ci95": [
+          0.015,
+          0.065
+        ]
+      },
+      "UNPARSED": {
+        "value": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "verdict_counts": {
+      "VULNERABLE": 522,
+      "SAFE": 57,
+      "INSUFFICIENT": 21
+    },
+    "bootstrap": {
+      "seed": 20260918,
+      "resamples": 1000,
+      "unit": "input_id"
+    }
+  }
+}

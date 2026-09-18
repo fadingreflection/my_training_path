@@ -1,0 +1,16 @@
+{
+  "sample_id": "f9ecfd105619c089",
+  "backend": "replay",
+  "seed_a": 0,
+  "seed_b": 1,
+  "seeds_functional": false,
+  "identical_outputs": true,
+  "api_key_available": false,
+  "fallback": "temperature_x3",
+  "fallback_temperatures": [
+    0.0,
+    0.4,
+    0.8
+  ],
+  "note": "Seeds produced identical text. Dispersion mode is temperature×3 [0.0, 0.4, 0.8]. v0 replay backend is a frozen temperature=0 teacher trace: the three slots replay the same flow (honest freeze, zero extra variance until live API generate --force)."
+}

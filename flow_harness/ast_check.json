@@ -1,0 +1,80 @@
+{
+  "n_unique_dataset": 1533,
+  "n_parse_ok": 1267,
+  "n_parse_fail": 266,
+  "fail_rate": 0.1735,
+  "fail_rate_gt_5pct": true,
+  "fail_examples": [
+    "f9ecfd105619c089",
+    "129e23be4f9dc1ed",
+    "ab232d15f7ca4ce4",
+    "1933ad773b6a7d28",
+    "15efd9a38dfd31d3",
+    "7c9b4b15557e8e89",
+    "e54b20566a172f6b",
+    "66f2df0e868332fd"
+  ],
+  "n_reserved": 140,
+  "n_skipped_reserved_parse_ok": 122,
+  "n_skipped_unparsed_teacher": 3,
+  "n_eligible": 1142,
+  "length_tertiles": {
+    "p33": 525,
+    "p66": 1455
+  },
+  "top_cwe": [
+    "CWE-20",
+    "CWE-399",
+    "CWE-119",
+    "CWE-125",
+    "CWE-264",
+    "CWE-362",
+    "CWE-190",
+    "CWE-200",
+    "CWE-189",
+    "CWE-416"
+  ],
+  "top_cwe_coverage": 0.7319,
+  "top_cwe_coverage_note": "14-way equal-count dataset: 10 classes cover 10/14≈0.714, below 0.80; using top-10 anyway, remainder in other",
+  "language": "monolingual C (1521/1533); single language stratum",
+  "selection_seed": 42,
+  "margins": {
+    "length": [
+      65,
+      70,
+      65
+    ],
+    "cwe": {
+      "other": 20,
+      "CWE-125": 18,
+      "CWE-264": 18,
+      "CWE-362": 18,
+      "CWE-119": 18,
+      "CWE-399": 18,
+      "CWE-20": 18,
+      "CWE-416": 18,
+      "CWE-189": 18,
+      "CWE-200": 18,
+      "CWE-190": 18
+    },
+    "sink_yes": 100,
+    "sink_no": 100,
+    "n": 200
+  },
+  "sampling": "from parse_ok ∩ not reserved ∩ teacher first-line verdict parseable; parse failures never enter the 200",
+  "gate_decision": {
+    "dataset_unparseable_pct": 0.1735,
+    "threshold_pct": 0.05,
+    "factor_over_threshold": 3.47,
+    "cause": "TBD",
+    "cause_provisional": {
+      "no_func_sig_head": "snippet does not start with a recognizable function signature",
+      "has_preproc": "#define / #ifdef in the body",
+      "cppish": "template / :: / class",
+      "truncated_tail": "body does not end with } or ;",
+      "kernel_macros": "e.g. kvm_for_each_memslot — parser sees a call-like identifier, often still parse_ok; remaining fails mix macros + chopped BigVul text"
+    },
+    "representativeness": "Phase 0 battery is sampled from the parseable 82.6% only. Conclusions do not cover the unparseable 17.4%. If those functions are systematically harder (macro-heavy, truncated), the training/eval distribution is biased. Estimate in Phase 1.",
+    "decision": "logged as a gate record; not a silent footnote"
+  }
+}

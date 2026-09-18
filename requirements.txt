@@ -26,3 +26,7 @@ openai
 requests
 packaging
 numpy
+pyyaml
+tree-sitter>=0.23
+tree-sitter-c
+tree-sitter-cpp

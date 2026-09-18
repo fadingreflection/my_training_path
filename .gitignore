@@ -146,3 +146,15 @@ __pycache__/
 .env
 .vscode/
 .idea/
+
+# Phase 0 harness artifacts (small, must be versioned)
+!flow_harness/
+!flow_harness/**
+!flow_harness/**/*.py
+!flow_harness/**/*.yaml
+!flow_harness/**/*.md
+!flow_harness/**/*.ids
+!flow_harness/**/*.json
+!flow_harness/**/*.jsonl
+flow_harness/**/__pycache__/
+flow_harness/**/*.pyc

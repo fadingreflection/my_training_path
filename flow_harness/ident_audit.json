@@ -1,0 +1,774 @@
+{
+  "gate2_verdict": null,
+  "gate2_note": "identifier_precision 0.20 is under metric audit. Do not start constrained-decoding / model-swap. Raw number is kept in v0_baseline.json.",
+  "raw_body_ast": {
+    "precision": 0.2102,
+    "n_pred_tokens": 43345,
+    "n_hit": 9112,
+    "note": "current harness metric: every English-like token in the flow vs function-body AST"
+  },
+  "code_like_vs_body_ast": {
+    "precision": 0.9082,
+    "n_pred_tokens": 10953,
+    "n_hit": 9948
+  },
+  "code_like_vs_expanded_gold": {
+    "precision": 0.9342,
+    "n_pred_tokens": 10953,
+    "n_hit": 10232,
+    "gold": "function-body AST identifiers ∪ identifier tokens ∪ ->fields ∪ name( callees ∪ ALL_CAPS macros in the snippet"
+  },
+  "by_category_vs_body_ast": {
+    "callee": {
+      "n": 3307,
+      "hit": 2879,
+      "precision": 0.8706
+    },
+    "field": {
+      "n": 3442,
+      "hit": 3414,
+      "precision": 0.9919
+    },
+    "local_or_param": {
+      "n": 3292,
+      "hit": 3107,
+      "precision": 0.9438
+    },
+    "macro": {
+      "n": 840,
+      "hit": 476,
+      "precision": 0.5667
+    },
+    "type": {
+      "n": 72,
+      "hit": 72,
+      "precision": 1.0
+    }
+  },
+  "by_category_vs_expanded_gold": {
+    "callee": {
+      "n": 3307,
+      "hit": 2966,
+      "precision": 0.8969
+    },
+    "field": {
+      "n": 3442,
+      "hit": 3416,
+      "precision": 0.9924
+    },
+    "local_or_param": {
+      "n": 3292,
+      "hit": 3241,
+      "precision": 0.9845
+    },
+    "macro": {
+      "n": 840,
+      "hit": 537,
+      "precision": 0.6393
+    },
+    "type": {
+      "n": 72,
+      "hit": 72,
+      "precision": 1.0
+    }
+  },
+  "by_category_vs_role_gold": {
+    "callee": {
+      "n": 3307,
+      "hit": 2914,
+      "precision": 0.8812
+    },
+    "field": {
+      "n": 3442,
+      "hit": 3413,
+      "precision": 0.9916
+    },
+    "local_or_param": {
+      "n": 3292,
+      "hit": 2223,
+      "precision": 0.6753
+    },
+    "macro": {
+      "n": 840,
+      "hit": 537,
+      "precision": 0.6393
+    },
+    "type": {
+      "n": 72,
+      "hit": 72,
+      "precision": 1.0
+    }
+  },
+  "role_gold_definition": {
+    "local_or_param": "AST parameter_declaration ∪ local declaration identifiers",
+    "field": "AST field_identifier ∪ ->field / obj.field in the snippet",
+    "callee": "AST call_expression function ∪ name( in the snippet",
+    "macro": "ALL_CAPS tokens in the snippet ∪ AST preproc/macro-like identifiers",
+    "type": "AST type_identifier ∪ struct Name in the snippet"
+  },
+  "false_split": {
+    "prose_tokens_counted_as_false": 13701,
+    "code_like_false_vs_body_ast": 1005
+  },
+  "audit_50": {
+    "n": 50,
+    "seed": 20260918,
+    "label_counts": {
+      "ast_limitation": 48,
+      "invented": 2
+    },
+    "rule": "prose_leak = English explanation word; ast_limitation = token exists in snippet or is a field/callee/macro/type used as a real symbol; invented = neither",
+    "rows": [
+      {
+        "input_id": "1e3f371cdde4cc6b",
+        "token": "INT64_MAX",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "qemu",
+        "cwe": "CWE-190",
+        "flow_excerpt": "- Missing/wrong check: the multiplications are performed without any overflow guard. `sector_num * BDRV_SECTOR_SIZE` and `nb_sectors * BDRV_SECTOR_SIZE` are computed in signed 64-bit arithmetic. A large `sector_num` (e.g",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "5000082ec0de3e98",
+        "token": "enough",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "savannah",
+        "cwe": "CWE-189",
+        "flow_excerpt": "This compares the declared length only against the destination buffer size, not against the source buffer's remaining bytes. If `str_size` is large enough (or the caller passes a generous buffer), the copy proceeds and r",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "c6dd644b8572bce2",
+        "token": "contents",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "FFmpeg",
+        "cwe": "CWE-125",
+        "flow_excerpt": "The attacker controls the packet contents (`pkt->data`, `pkt->size`), and therefore the `hdr->frame_size` values parsed out of the bitstream. The loop:",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "ac8d3d3fceed9d4f",
+        "token": "entered",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "php",
+        "cwe": "CWE-416",
+        "flow_excerpt": "Additionally, `efree(source)` is executed before `zend_shared_alloc_register_xlat_entry(source, retval)` records the mapping. If allocation/registration fails or the function is re-entered (e.g., through a memory-allocat",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "6204222982323d71",
+        "token": "plaintext",
+        "category": "callee",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "openvpn",
+        "cwe": "CWE-200",
+        "flow_excerpt": "the replay-protected packet ID is read **from the IV**, i.e. from data that is transmitted in the clear and never appears in the decrypted, integrity-protected plaintext. The only thing that would authenticate the IV is ",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "f6f16fb94ff9e526",
+        "token": "ICC",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "jasper",
+        "cwe": "CWE-190",
+        "flow_excerpt": "- Attacker-controlled input: the bytes of the ICC profile stream `in`. An attacker crafting the file controls all 4 bytes that `jas_iccgetuint(in, 4, &tmp)` reads.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "6d4ca2a83f849b57",
+        "token": "systems",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-190",
+        "flow_excerpt": "The attacker-controlled input is `nvec`, which comes from the interrupt-count value an attacker supplies via the VFIO ioctl that triggers MSI/MSI-X enablement. The missing check is that `nvec` is never validated against ",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "318b92a48a6dbd4c",
+        "token": "fail",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Android",
+        "cwe": "CWE-189",
+        "flow_excerpt": "- `native_handle_create(numFds, numInts)` is called with the raw attacker values. A negative or oversized count can make allocation fail (returning NULL) or mis-size the handle. The code never checks the return value bef",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "69f9d9bbc2662488",
+        "token": "size_t",
+        "category": "local_or_param",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Chrome",
+        "cwe": "CWE-362",
+        "flow_excerpt": "- `size_t new_size = gc_info_table_size_ ? 2 * gc_info_table_size_ : kInitialSize;`",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "9c5d6e47330448c0",
+        "token": "TOCTOU",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Android",
+        "cwe": "CWE-284",
+        "flow_excerpt": "3. Missing lock/TOCTOU on `slot->fd`.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "5f1aeec7680ccee7",
+        "token": "root",
+        "category": "callee",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": true,
+        "in_role_gold": true,
+        "project": "samba",
+        "cwe": "CWE-20",
+        "flow_excerpt": "When `lp_strict_modes(module)` is true, the code unconditionally sets `ok = 0` and logs a complaint — without ever examining `st.st_mode`. The intent of a strict-modes check is: *if* the file is other-accessible, reject ",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "8236e66cc00a80a0",
+        "token": "SPS",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Android",
+        "cwe": "CWE-190",
+        "flow_excerpt": "1. The SPS lookup can fail silently and hand an invalid/uninitialized SPS to the SEI parsers.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "e24e3fb246984aa5",
+        "token": "payload",
+        "category": "callee",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": true,
+        "in_role_gold": true,
+        "project": "Android",
+        "cwe": "CWE-20",
+        "flow_excerpt": "Competing hypotheses: (1) out-of-bounds indexing of `m_clusters` via `pCurr->m_index + 1`; (2) integer overflow in the position arithmetic used to validate the file-format bounds when skipping the current cluster's paylo",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "6f112fba6a81f1f8",
+        "token": "RPC",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-189",
+        "flow_excerpt": "3. Uninitialized `pages[]` array used as RPC buffers when `buf_to_pages()` fails — this is the strongest attacker-reachable path.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "4f84a9fa3bfe5566",
+        "token": "GPU",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Chrome",
+        "cwe": "CWE-362",
+        "flow_excerpt": "then copies that uninitialized stack/heap residue into `iq_matrix_buf`, which is handed to the GPU driver via:",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "17068b9b97f7c076",
+        "token": "uint32_t",
+        "category": "local_or_param",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "tcpdump",
+        "cwe": "CWE-125",
+        "flow_excerpt": "- Sink: `EXTRACT_32BITS(ptr)` — the cast `const uint32_t *ptr = (const uint32_t *)dat;` followed by `EXTRACT_32BITS(ptr)` reads 4 bytes at `dat` (twice, once per mask test). If fewer than 4 bytes remain in the captured p",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "e7fd5b480b4bdef6",
+        "token": "VMA",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-416",
+        "flow_excerpt": "This check is wrong in direction: it does not verify that `address` lies within the gate area at all. Any user-space address below `TASK_SIZE` is routed to `pgd_offset_gate(mm, address)`, and the code then walks the gate",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "cb49b225c3ba7416",
+        "token": "safely",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-399",
+        "flow_excerpt": "Hypothesis 2 is ruled out: `find_swevent_head_rcu` is an unseen callee that performs its own lookup and returns NULL safely (`if (!head) goto end;`), so no indexing happens here. Hypothesis 3 is ruled out: `data` and `re",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "bf9a2b04e3f0d707",
+        "token": "FIFO",
+        "category": "callee",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "qemu",
+        "cwe": "CWE-787",
+        "flow_excerpt": "Competing hypotheses: (1) integer overflow in the size computations `SVGA_BITMAP_SIZE(x, y)` / `SVGA_PIXMAP_SIZE(x, y, cursor.bpp)` feeding the loop bounds; (2) missing FIFO-length validation before the bulk reads in the",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "c4eb11bb6027a67f",
+        "token": "OOB",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "samba",
+        "cwe": "CWE-399",
+        "flow_excerpt": "2. Memory bounds / lifetime issue in `asn1_read_uint8` or the tag helpers — ruled out because those callees are not shown and the pattern list for this body (no deletion, no free, no overflow, no OOB in this function) do",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "6204222982323d71",
+        "token": "CFB",
+        "category": "macro",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": true,
+        "project": "openvpn",
+        "cwe": "CWE-200",
+        "flow_excerpt": "4. *Replay-check logic* — the packet ID handling itself (`packet_id_test`/`packet_id_add`) is present and correct in structure, **but** the source of the packet ID in the CFB/OFB path is the problem (chosen path below).",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "cb49b225c3ba7416",
+        "token": "period",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-399",
+        "flow_excerpt": "The protection against freeing during this window is solely the RCU read-side critical section opened by `rcu_read_lock()` and closed by `rcu_read_unlock()`. If the swevent's removal/free path does not honor the same RCU",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "8fda143c6d7780a6",
+        "token": "repeatedly",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "tcpdump",
+        "cwe": "CWE-125",
+        "flow_excerpt": "2. **Integer underflow of `len` feeding an index or loop bound.** `len` is decremented repeatedly (`len -= 8`, `len -= 4`, `len -= 12`, `len -= 6`) with no check that it is large enough first, so it can wrap. However, `l",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "bf9a2b04e3f0d707",
+        "token": "dimensions",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "qemu",
+        "cwe": "CWE-787",
+        "flow_excerpt": "The sink is `vmsvga_fifo_read_raw(s)`, executed up to `SVGA_BITMAP_SIZE(x, y) + SVGA_PIXMAP_SIZE(x, y, cursor.bpp)` times with no check that that many words actually remain in the FIFO (`len` is not consulted at all on t",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "caea23547e4aaf2f",
+        "token": "parser",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "iperf",
+        "cwe": "CWE-119",
+        "flow_excerpt": "and, by contract of this parser family, `parse_value` records the error position into that same global `ep` when parsing attacker-controlled JSON fails. Because `ep` is a single shared global rather than per-parse state,",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "503a77988171a7ef",
+        "token": "unvalidated",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Android",
+        "cwe": "CWE-284",
+        "flow_excerpt": "Even where the multiplication is done in size_t width, `delay` up to 2^31−1 times `frameSize` can exceed practical address space and there is no overflow check, so the size fed to the sink is attacker-controlled and unva",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "8f96bcc0c44870d7",
+        "token": "file_util",
+        "category": "local_or_param",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Chrome",
+        "cwe": "CWE-264",
+        "flow_excerpt": "Chosen path: attacker-controlled input is `options.name` (a shared-memory name, potentially supplied by an untrusted caller/renderer). When `options.name` is non-empty, the code computes `path` via `FilePathForMemoryName",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "dea0a04689beb2de",
+        "token": "item",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Chrome",
+        "cwe": "CWE-399",
+        "flow_excerpt": "Chosen path: attacker-controlled input is the folder name, `folder_item_->name()`. The missing check is any validity/liveness verification of `folder_item_` — the function only tests `if (!folder_item_)`, which guards ag",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "8236e66cc00a80a0",
+        "token": "NAL",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Android",
+        "cwe": "CWE-190",
+        "flow_excerpt": "- Attacker input: a SEI NAL (`i1_nal_type == NAL_PREFIX_SEI`) with `u4_payload_type` equal to `SEI_BUFFERING_PERIOD` or `SEI_PICTURE_TIMING`, sent in a stream where no SPS has yet been marked valid (or after SPS validity",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "52a44f3629466351",
+        "token": "MD5",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-284",
+        "flow_excerpt": "4. **Missing access-control / policy check**: `xfrm4_policy_check` is invoked on the process path, the no-socket path, and the time-wait path; the MD5 hash check is applied for both the listener and the established-socke",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "d5c3219c29644200",
+        "token": "INT_MAX",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-20",
+        "flow_excerpt": "1. Truncation: `int copy = min(bytes, iov->iov_len - base);` computes the min in size_t, then stores it in an `int`. If `iov->iov_len - base` exceeds INT_MAX (a segment near 4 GB or larger, which an attacker supplying bu",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "ab13d6bdcaf04dfa",
+        "token": "NONDMA",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "qemu",
+        "cwe": "CWE-119",
+        "flow_excerpt": "When the NONDMA flag is clear (DMA/transfer mode), no modulo or bounds check is applied to `pos`. The FIFO buffer is only `FD_SECTOR_LEN` bytes (as shown by `memset(fdctrl->fifo, 0, FD_SECTOR_LEN)`), yet the read sink is",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "497ab13237ad792f",
+        "token": "ssize_t",
+        "category": "local_or_param",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "ImageMagick",
+        "cwe": "CWE-119",
+        "flow_excerpt": "1. *Heap buffer overflow in the run-length decode buffer* — the `pixels` scratch buffer is `length+1` bytes (`length=(image->columns+7)/8`, i.e. 72+1), and every write is `*p++=byte` guarded only indirectly by the `offse",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "81248cc28f9e77b7",
+        "token": "err3",
+        "category": "local_or_param",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-416",
+        "flow_excerpt": "3. Error-path lifetime handling — the `err2`/`err3` cleanup does remove the idr entry, delete from the list, and free `mc`, so no double-free or leak there.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "6be0dceb9670a16e",
+        "token": "parameter",
+        "category": "callee",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Chrome",
+        "cwe": "CWE-416",
+        "flow_excerpt": "2. **Missing input validation on `pname`**: The switch enumerates the accepted parameter names, and every non-matching value falls into the `default` case (or a guarded fallthrough) that calls `SynthesizeGLError(GL_INVAL",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "281d1981b0fc36b4",
+        "token": "qedi_iscsi_io_setup",
+        "category": "local_or_param",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-125",
+        "flow_excerpt": "The copy always reads exactly 31 bytes from `func`, regardless of how long the string actually is. There is no `strlen` check or strlcpy/strscpy-style bounded copy that stops at the source's NUL terminator. If `func` poi",
+        "audit_label": "invented"
+      },
+      {
+        "input_id": "d37faf1601028ac7",
+        "token": "patterns",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-399",
+        "flow_excerpt": "INSUFFICIENT_INFO. The only attacker-reachable sink is `perf_swevent_event(bp, 1, 1, &sample, regs)`, and the guard `!bp->hw.state && !perf_exclude_event(bp, regs)` depends on the unseen callee `perf_exclude_event` to re",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "5f1aeec7680ccee7",
+        "token": "st_mode",
+        "category": "field",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "samba",
+        "cwe": "CWE-20",
+        "flow_excerpt": "When `lp_strict_modes(module)` is true, the code unconditionally sets `ok = 0` and logs a complaint — without ever examining `st.st_mode`. The intent of a strict-modes check is: *if* the file is other-accessible, reject ",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "5f06a98162634f52",
+        "token": "wrapped",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-189",
+        "flow_excerpt": "The addition `when + sgi_clock_period - 1` can wrap in `unsigned long`, and the final `+ rtc_time()` can also overflow, producing a wrapped (small or past) expiry value. The same applies to `period`.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "4a7e9612e478cb3c",
+        "token": "refcount_inc",
+        "category": "local_or_param",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-416",
+        "flow_excerpt": "An attacker who can repeatedly splice or get a reference to the same pipe buffer drives the path `ref->ref++`. The increment is a plain `ref->ref++` on a plain integer field, not an atomic operation such as `refcount_inc",
+        "audit_label": "invented"
+      },
+      {
+        "input_id": "1976d321b5734cd1",
+        "token": "TCP",
+        "category": "macro",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": true,
+        "project": "linux",
+        "cwe": "CWE-416",
+        "flow_excerpt": "3. *Predictable TCP initial sequence number on reconnect (chosen path).* This is fully contained in the shown body and is attacker-reachable.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "ed9772a9ab1bf494",
+        "token": "idiom",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Chrome",
+        "cwe": "CWE-399",
+        "flow_excerpt": "1. **Iterator invalidation / erase-during-iteration**: Both loops erase from the container being iterated (`data.resources.erase(current)`, `data.object_vars.erase(*current)`). This is the classic deletion-during-iterati",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "780c94f67359ba08",
+        "token": "id",
+        "category": "local_or_param",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "pacemaker",
+        "cwe": "CWE-264",
+        "flow_excerpt": "The attacker-controlled input is the set of attributes on the newly created node. The intended policy, stated in the comment, is that scaffolding (a node with no attributes or only an `id`) is always allowed, and anythin",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "6f112fba6a81f1f8",
+        "token": "out_free",
+        "category": "local_or_param",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-189",
+        "flow_excerpt": "2. Server-controlled length (`res.acl_len`) overflowing the copy into `buf`. This is guarded: `if (res.acl_len > buflen) goto out_free;` before `memcpy(buf, resp_buf, res.acl_len)`, and in the small-buffer case `res.acl_",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "69f9d9bbc2662488",
+        "token": "uint8_t",
+        "category": "local_or_param",
+        "in_source_text": true,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Chrome",
+        "cwe": "CWE-362",
+        "flow_excerpt": "- `memset(reinterpret_cast<uint8_t*>(g_gc_info_table) + gc_info_table_size_ * sizeof(GCInfo), kGcInfoZapValue, (new_size - gc_info_table_size_) * sizeof(GCInfo));`",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "c3fc77ed5568a024",
+        "token": "XFS_ACL_MAX_ENTRIES",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-189",
+        "flow_excerpt": "There is no check that `count` is non-negative or bounded by `XFS_ACL_MAX_ENTRIES`. `count` is a signed `int`, so an attacker-supplied value with the high bit set becomes negative. With a negative `count`, `posix_acl_all",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "a70541662b015cf7",
+        "token": "USB",
+        "category": "macro",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-119",
+        "flow_excerpt": "3. Uninitialized stack data from a short USB read — this is the chosen path.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "5f1aeec7680ccee7",
+        "token": "secret",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "samba",
+        "cwe": "CWE-20",
+        "flow_excerpt": "The chosen path: the function's purpose is to gate access to a secret (`challenge`/`pass` authentication) based on a secrets file. The security-relevant checks are the fstat-based mode/ownership validations. Look at the ",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "dcc1e3d2673a1910",
+        "token": "JNI",
+        "category": "field",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "Chrome",
+        "cwe": "CWE-254",
+        "flow_excerpt": "1. Missing access-control check: the method is exposed via JNI and can be invoked by any caller of the Java object, and it triggers a sync refresh without verifying caller identity or permission.",
+        "audit_label": "ast_limitation"
+      },
+      {
+        "input_id": "0a02024b51875761",
+        "token": "maybe_get_net",
+        "category": "callee",
+        "in_source_text": false,
+        "in_source_fields": false,
+        "in_source_callees": false,
+        "in_role_gold": false,
+        "project": "linux",
+        "cwe": "CWE-416",
+        "flow_excerpt": "- *Missing check*: the function never validates that the namespace referenced by `pch->chan_net` is still live, and it takes no reference on it before use. There is no `maybe_get_net()`-style hold, no check of a dead fla",
+        "audit_label": "ast_limitation"
+      }
+    ]
+  }
+}
