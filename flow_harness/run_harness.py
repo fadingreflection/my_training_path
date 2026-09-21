@@ -282,8 +282,37 @@ def write_report(current: dict, v0: dict | None, path_md: Path, path_json: Path,
         "|---|---:|---|",
     ]
     m = current["metrics"]
-    for key in ("truncation_rate", "repetition_ratio", "identifier_precision", "quote_precision"):
+    metric_keys = (
+        "truncation_rate",
+        "repetition_ratio",
+        "repetition_ratio_nonempty",
+        "identifier_precision",
+        "identifier_precision_raw",
+        "identifier_precision_expanded",
+        "quote_precision",
+        "quote_precision_raw",
+    )
+    for key in metric_keys:
+        if key not in m or not m[key]:
+            continue
         lines.append(f"| {key} | {m[key]['value']:.4f} | [{m[key]['ci95'][0]:.4f}, {m[key]['ci95'][1]:.4f}] |")
+    if m.get("identifier_precision_note"):
+        lines += ["", f"_{m['identifier_precision_note']}_"]
+    if "n_no_code_idents_rows" in m:
+        lines += [
+            "",
+            f"rows with zero code-shaped idents: {m['n_no_code_idents_rows']} / {m['n_rows']}",
+        ]
+    if "n_no_code_quotes_rows" in m:
+        lines.append(f"rows with zero code-shaped quotes: {m['n_no_code_quotes_rows']} / {m['n_rows']}")
+    if m.get("repetition_ratio_nonempty"):
+        r = m["repetition_ratio_nonempty"]
+        lines.append(
+            f"repetition_ratio_nonempty: {r['value']:.4f} [{r['ci95'][0]:.4f}, {r['ci95'][1]:.4f}] "
+            "(same as all-rows when no empty flows)"
+        )
+    if "n_code_quote_spans" in m and "n_raw_quote_spans" in m:
+        lines.append(f"code-shaped quote spans: {m['n_code_quote_spans']} / raw {m['n_raw_quote_spans']}")
     lines += ["", "## verdict_distribution", "", "| verdict | share | count | 95% CI |", "|---|---:|---:|---|"]
     for lab in ("VULNERABLE", "SAFE", "INSUFFICIENT", "UNPARSED"):
         share = m["verdict_distribution"].get(lab, 0.0)
@@ -295,7 +324,9 @@ def write_report(current: dict, v0: dict | None, path_md: Path, path_json: Path,
     elif v0:
         lines += ["", "## v0 vs current", "", "| metric | v0 | current |", "|---|---:|---:|"]
         vm = v0["metrics"]
-        for key in ("truncation_rate", "repetition_ratio", "identifier_precision", "quote_precision"):
+        for key in metric_keys:
+            if key not in m or key not in vm:
+                continue
             lines.append(f"| {key} | {_fmt_ci(vm[key])} | {_fmt_ci(m[key])} |")
         lines.append("| UNPARSED | " f"{vm['unparsed_count']} | {m['unparsed_count']} |")
     else:

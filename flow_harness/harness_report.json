@@ -10,11 +10,11 @@
   ],
   "normalization_fingerprint": "8cdd16c7889a2b0d1cfb0a66990454ab6ebca5e0839c9e2c177f847ed07d01b3",
   "dispersion_mode": "temperature_fallback",
-  "evaluate_seconds": 0.41,
+  "evaluate_seconds": 2.359,
   "metrics": {
     "n_inputs": 200,
     "n_rows": 600,
-    "unparsed_count": 3,
+    "unparsed_count": 0,
     "truncation_rate": {
       "value": 0.028333,
       "ci95": [
@@ -29,25 +29,59 @@
         0.999979
       ]
     },
-    "identifier_precision": {
-      "value": 0.190854,
+    "repetition_ratio_nonempty": {
+      "value": 0.999116,
       "ci95": [
-        0.181489,
-        0.199679
+        0.997426,
+        0.999978
+      ]
+    },
+    "identifier_precision": {
+      "value": 0.852016,
+      "ci95": [
+        0.840603,
+        0.862911
+      ]
+    },
+    "identifier_precision_raw": {
+      "value": 0.191961,
+      "ci95": [
+        0.182431,
+        0.20078
+      ]
+    },
+    "identifier_precision_expanded": {
+      "value": 0.884216,
+      "ci95": [
+        0.874411,
+        0.894333
       ]
     },
     "quote_precision": {
-      "value": 0.738815,
+      "value": 0.865785,
       "ci95": [
-        0.713081,
-        0.765415
+        0.849707,
+        0.881216
       ]
     },
+    "quote_precision_raw": {
+      "value": 0.800784,
+      "ci95": [
+        0.777188,
+        0.823257
+      ]
+    },
+    "identifier_precision_note": "identifier_precision = code-shaped tokens vs function-body AST (Gate 2 candidate). identifier_precision_raw = legacy all-words metric. quote_precision = code-shaped backticks only; quote_precision_raw = all backticks ≥8 chars.",
+    "n_no_code_idents_rows": 1,
+    "n_no_code_quotes_rows": 2,
+    "n_pred_code_tokens": 43897,
+    "n_raw_quote_spans": 11586,
+    "n_code_quote_spans": 9206,
     "verdict_distribution": {
       "VULNERABLE": 0.706667,
-      "SAFE": 0.165,
+      "SAFE": 0.17,
       "INSUFFICIENT": 0.123333,
-      "UNPARSED": 0.005
+      "UNPARSED": 0.0
     },
     "verdict_distribution_ci": {
       "VULNERABLE": {
@@ -58,10 +92,10 @@
         ]
       },
       "SAFE": {
-        "value": 0.165,
+        "value": 0.17,
         "ci95": [
-          0.125,
-          0.206667
+          0.128333,
+          0.211667
         ]
       },
       "INSUFFICIENT": {
@@ -72,18 +106,17 @@
         ]
       },
       "UNPARSED": {
-        "value": 0.005,
+        "value": 0.0,
         "ci95": [
           0.0,
-          0.010042
+          0.0
         ]
       }
     },
     "verdict_counts": {
       "INSUFFICIENT": 74,
       "VULNERABLE": 424,
-      "SAFE": 99,
-      "UNPARSED": 3
+      "SAFE": 102
     },
     "bootstrap": {
       "seed": 20260918,

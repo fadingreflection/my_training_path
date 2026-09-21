@@ -8,6 +8,8 @@ import tree_sitter_c as tsc
 import tree_sitter_cpp as tscpp
 
 IDENT_TYPES = {"identifier", "field_identifier", "type_identifier"}
+TYPE_NODE_TYPES = {"primitive_type", "sized_type_specifier"}
+PREPROC_DEF_TYPES = {"preproc_def", "preproc_function_def"}
 CATEGORIES = ("param", "local", "field", "callee", "type", "macro", "other")
 
 _C_PARSER = Parser(Language(tsc.language()))
@@ -31,11 +33,26 @@ def _text(node) -> str:
         return ""
 
 
+def _preproc_name(node) -> str:
+    name_node = node.child_by_field_name("name")
+    if name_node is not None:
+        return _text(name_node).strip()
+    for child in node.children:
+        if child.type == "identifier":
+            return _text(child).strip()
+    return ""
+
+
 def _collect_idents(node, out: list[str]) -> None:
-    if node.type in IDENT_TYPES:
-        text = _text(node)
+    ntype = node.type
+    if ntype in IDENT_TYPES | TYPE_NODE_TYPES:
+        text = _text(node).strip()
         if text:
             out.append(text)
+    elif ntype in PREPROC_DEF_TYPES:
+        name = _preproc_name(node)
+        if name:
+            out.append(name)
     for child in node.children:
         _collect_idents(child, out)
 
@@ -59,7 +76,11 @@ def categorize_tree(root) -> dict[str, list[str]]:
         in_param = in_param or ntype in {"parameter_declaration", "parameter_list"}
         in_decl = in_decl or ntype in {"declaration", "init_declarator"}
         name = _text(node) if ntype in IDENT_TYPES else ""
-        if ntype == "field_identifier" and name:
+        if ntype in TYPE_NODE_TYPES:
+            add("type", _text(node).strip())
+        elif ntype in PREPROC_DEF_TYPES:
+            add("macro", _preproc_name(node))
+        elif ntype == "field_identifier" and name:
             add("field", name)
         elif ntype == "type_identifier" and name:
             add("type", name)
