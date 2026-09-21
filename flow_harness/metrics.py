@@ -114,7 +114,8 @@ def evaluate_outputs(
         for rec in runs:
             n_rows += 1
             flow = rec.get("flow_text") or ""
-            verd = rec.get("verdict") or parse_verdict(flow)
+            verd = parse_verdict(flow)
+            rec["verdict"] = verd
             verdicts[verd] += 1
             if verd == "UNPARSED":
                 unparsed += 1
@@ -134,7 +135,7 @@ def evaluate_outputs(
     for label in dist:
         per_input = []
         for runs in by_id.values():
-            per_input.append(sum(1 for r in runs if (r.get("verdict") or parse_verdict(r.get("flow_text") or "")) == label) / max(len(runs), 1))
+            per_input.append(sum(1 for r in runs if parse_verdict(r.get("flow_text") or "") == label) / max(len(runs), 1))
         dist_ci[label] = _ci(per_input, np.random.default_rng(bootstrap_seed), n_boot)
 
     return {

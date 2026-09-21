@@ -74,14 +74,20 @@ class ReplayGenerator:
 
 
 class OpenRouterGenerator:
+    """Same OpenRouter path as explain_cwe_map/run.py: reasoning effort + visible text."""
+
+    RETRIES = 4
+    REASONING_MAX_TOKENS = 2048
+
     def __init__(self, model_name: str):
         import sys
 
         sys.path.insert(0, str(ROOT / "explain_cwe_map"))
-        from run import OPENROUTER_BASE_URL, make_client  # noqa: WPS433
+        from run import OPENROUTER_BASE_URL, _visible_text, make_client  # noqa: WPS433
 
         self.model_name = model_name
         self._make_client = make_client
+        self._visible_text = _visible_text
         self._base = OPENROUTER_BASE_URL
         self.client = make_client()
 
@@ -96,23 +102,49 @@ class OpenRouterGenerator:
         prompt: str,
     ) -> GenResult:
         messages = [{"role": "user", "content": f"{prompt.rstrip()}\n\n{rec['code'].strip()}\n"}]
+        reasoning = {"effort": "low", "max_tokens": min(self.REASONING_MAX_TOKENS, int(max_tokens))}
+        last_err = ""
         t0 = time.monotonic()
-        resp = self.client.chat.completions.create(
-            model=self.model_name,
-            messages=messages,
-            temperature=float(temperature),
-            top_p=float(top_p),
-            max_tokens=int(max_tokens),
-            seed=int(seed),
-        )
+        for attempt in range(self.RETRIES):
+            try:
+                extra_body: dict[str, Any] = {
+                    "models": [self.model_name],
+                    "reasoning": reasoning,
+                }
+                resp = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=messages,
+                    temperature=float(temperature),
+                    top_p=float(top_p),
+                    max_tokens=int(max_tokens),
+                    seed=int(seed),
+                    extra_body=extra_body,
+                )
+                choice = resp.choices[0]
+                text, src = self._visible_text(choice.message)
+                usage = getattr(resp, "usage", None)
+                tokens = int(getattr(usage, "completion_tokens", 0) or 0) if usage else len(text.split())
+                finish = (getattr(choice, "finish_reason", None) or "").lower()
+                truncated = finish in {"length", "max_tokens"}
+                elapsed_ms = int((time.monotonic() - t0) * 1000)
+                if not text:
+                    last_err = f"empty content after reasoning src={src}"
+                    time.sleep(min(2 ** attempt, 20))
+                    continue
+                result = GenResult(text, tokens, elapsed_ms, truncated, "openrouter")
+                result.error = ""
+                return result
+            except Exception as exc:
+                err = str(exc)
+                last_err = err[:300]
+                if "reasoning" in err.lower() and "max_tokens" in reasoning:
+                    reasoning = {"effort": "low"}
+                wait = min(2 ** attempt, 20)
+                if "429" in err:
+                    wait = min(15 * (attempt + 1), 90)
+                time.sleep(wait)
         elapsed_ms = int((time.monotonic() - t0) * 1000)
-        choice = resp.choices[0]
-        text = (choice.message.content or "").strip()
-        usage = getattr(resp, "usage", None)
-        tokens = int(getattr(usage, "completion_tokens", 0) or 0) if usage else len(text.split())
-        finish = (getattr(choice, "finish_reason", None) or "").lower()
-        truncated = finish in {"length", "max_tokens"}
-        return GenResult(text, tokens, elapsed_ms, truncated, "openrouter")
+        return GenResult("", 0, elapsed_ms, False, "openrouter", error=last_err or "empty content")
 
 
 def make_generator(manifest: dict[str, Any]) -> ReplayGenerator | OpenRouterGenerator:

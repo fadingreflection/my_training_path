@@ -1,23 +1,23 @@
 {
-  "spec_hash": "9641eead0b859b16441bfb27ac6c8be44c24361da66d2fc0ef7c83d53d7a7830",
+  "spec_hash": "fc884d0d179f7bbe39e0365167ce644f368b843258579d58554aed467e16f948",
   "version": "v0",
-  "version_label": "v0-9641eead",
+  "version_label": "v0-fc884d0d",
   "normalization": [
     "strip",
     "unify_quotes",
     "unify_dashes",
     "collapse_whitespace"
   ],
-  "n_written_this_call": 600,
+  "n_written_this_call": 183,
   "n_total": 600,
   "seed_check": {
     "sample_id": "f9ecfd105619c089",
-    "backend": "replay",
+    "backend": "openrouter",
     "seed_a": 0,
     "seed_b": 1,
     "seeds_functional": false,
     "identical_outputs": true,
-    "api_key_available": false,
+    "api_key_available": true,
     "fallback": "temperature_x3",
     "fallback_temperatures": [
       0.0,

@@ -10,7 +10,9 @@ import argparse
 import json
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from threading import Lock
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -160,6 +162,20 @@ def cmd_generate(args: argparse.Namespace) -> None:
     label = version_label(manifest)
 
     existing = _jsonl(out_path)
+    if getattr(args, "retry_unparsed", False) and existing and not args.force:
+        kept = []
+        dropped = 0
+        for rec in existing:
+            verd = parse_verdict(rec.get("flow_text") or "")
+            rec["verdict"] = verd
+            if verd == "UNPARSED":
+                dropped += 1
+                continue
+            kept.append(rec)
+        existing = kept
+        _write_jsonl(out_path, existing)
+        print(f"retry-unparsed dropped={dropped} kept={len(existing)} → {out_path}", flush=True)
+
     if existing and not args.force:
         meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
         if meta.get("spec_hash") != spec:
@@ -183,40 +199,55 @@ def cmd_generate(args: argparse.Namespace) -> None:
     have = {(r["input_id"], r["seed"]) for r in existing}
     gen = make_generator(manifest)
     sampling = manifest["sampling"]
+    jobs = [
+        (rec, slot)
+        for rec in inputs
+        for slot in slots
+        if (rec["id"], slot["seed"]) not in have
+    ]
     n_written = 0
+    lock = Lock()
+    workers = max(1, int(getattr(args, "workers", 8)))
+
+    def _one(rec: dict, slot: dict) -> dict:
+        result: GenResult = gen.generate(
+            rec,
+            seed=slot["seed"],
+            temperature=slot["temperature"],
+            max_tokens=int(sampling["max_tokens"]),
+            top_p=float(sampling["top_p"]),
+            prompt=manifest["prompt"],
+        )
+        verd = parse_verdict(result.flow_text) if not result.error else "UNPARSED"
+        return {
+            "input_id": rec["id"],
+            "seed": slot["seed"],
+            "temperature": slot["temperature"],
+            "dispersion_mode": slot["mode"],
+            "flow_text": result.flow_text,
+            "tokens_used": result.tokens_used,
+            "elapsed_ms": result.elapsed_ms,
+            "truncated_flag": bool(result.truncated_flag),
+            "verdict": verd,
+            "backend": result.backend,
+            "error": result.error,
+            "spec_hash": spec,
+            "version_label": label,
+        }
+
+    print(f"generate jobs={len(jobs)} workers={workers} slots={slots}", flush=True)
     with out_path.open("a", encoding="utf-8") as fh:
-        for rec in inputs:
-            for slot in slots:
-                key = (rec["id"], slot["seed"])
-                if key in have:
-                    continue
-                result: GenResult = gen.generate(
-                    rec,
-                    seed=slot["seed"],
-                    temperature=slot["temperature"],
-                    max_tokens=int(sampling["max_tokens"]),
-                    top_p=float(sampling["top_p"]),
-                    prompt=manifest["prompt"],
-                )
-                verd = parse_verdict(result.flow_text) if not result.error else "UNPARSED"
-                row = {
-                    "input_id": rec["id"],
-                    "seed": slot["seed"],
-                    "temperature": slot["temperature"],
-                    "dispersion_mode": slot["mode"],
-                    "flow_text": result.flow_text,
-                    "tokens_used": result.tokens_used,
-                    "elapsed_ms": result.elapsed_ms,
-                    "truncated_flag": bool(result.truncated_flag),
-                    "verdict": verd,
-                    "backend": result.backend,
-                    "error": result.error,
-                    "spec_hash": spec,
-                    "version_label": label,
-                }
-                fh.write(json.dumps(row, ensure_ascii=False) + "\n")
-                n_written += 1
-                have.add(key)
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futs = [pool.submit(_one, rec, slot) for rec, slot in jobs]
+            for i, fut in enumerate(as_completed(futs), 1):
+                row = fut.result()
+                with lock:
+                    fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    fh.flush()
+                    n_written += 1
+                    have.add((row["input_id"], row["seed"]))
+                if i % 10 == 0 or i == len(futs):
+                    print(f"progress {i}/{len(futs)} last={row['input_id']} verd={row['verdict']}", flush=True)
     meta = {
         "spec_hash": spec,
         "version": manifest["version"],
@@ -332,6 +363,12 @@ def main() -> None:
     g.add_argument("--force", action="store_true")
     g.add_argument("--force-battery", action="store_true")
     g.add_argument("--force-seed-check", action="store_true")
+    g.add_argument("--workers", type=int, default=8)
+    g.add_argument(
+        "--retry-unparsed",
+        action="store_true",
+        help="drop empty/UNPARSED cached rows and regenerate those slots only",
+    )
     e = sub.add_parser("evaluate")
     e.add_argument("--outputs", type=Path, default=HERE / "v0_outputs.jsonl")
     e.add_argument("--manifest", type=Path, default=HERE / "v0_manifest.yaml")

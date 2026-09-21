@@ -10,8 +10,9 @@ _HEAD = re.compile(r"^[\s#>*-]*")
 def parse_verdict(flow_text: str) -> str:
     if not (flow_text or "").strip():
         return "UNPARSED"
-    raw = flow_text.splitlines()[0]
+    raw = next((ln for ln in flow_text.splitlines() if ln.strip()), "")
     head = _HEAD.sub("", raw).strip().strip('"').strip("'")
+    head = head.replace("*", " ").replace("`", " ")
     token = head.split()[0].upper().rstrip(".:;") if head else ""
     token = token.replace("-", "_")
     if token in {"VULNERABLE", "VULN"}:

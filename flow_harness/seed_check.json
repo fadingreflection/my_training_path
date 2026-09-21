@@ -1,11 +1,11 @@
 {
   "sample_id": "f9ecfd105619c089",
-  "backend": "replay",
+  "backend": "openrouter",
   "seed_a": 0,
   "seed_b": 1,
   "seeds_functional": false,
   "identical_outputs": true,
-  "api_key_available": false,
+  "api_key_available": true,
   "fallback": "temperature_x3",
   "fallback_temperatures": [
     0.0,

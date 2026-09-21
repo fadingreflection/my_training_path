@@ -3,7 +3,7 @@ model_name: z-ai/glm-5.3-flash
 checkpoint_hash: e0918c2040a5eda0d3ef092d647d11a4a2d0de106cb9dabd464b0297dd2fa34c
 tokenizer_version: openrouter-passthrough
 constrained_decoding_version: none
-backend: replay
+backend: auto
 replay_traces: explain_cwe_map/runs/glm53flash_full.jsonl
 selection_seed: 42
 bootstrap_seed: 20260918

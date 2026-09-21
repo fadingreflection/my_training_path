@@ -1,7 +1,7 @@
 {
   "version": "v0",
-  "version_label": "v0-9641eead",
-  "spec_hash": "9641eead0b859b16441bfb27ac6c8be44c24361da66d2fc0ef7c83d53d7a7830",
+  "version_label": "v0-fc884d0d",
+  "spec_hash": "fc884d0d179f7bbe39e0365167ce644f368b843258579d58554aed467e16f948",
   "normalization": [
     "strip",
     "unify_quotes",
@@ -10,79 +10,80 @@
   ],
   "normalization_fingerprint": "8cdd16c7889a2b0d1cfb0a66990454ab6ebca5e0839c9e2c177f847ed07d01b3",
   "dispersion_mode": "temperature_fallback",
-  "evaluate_seconds": 0.334,
+  "evaluate_seconds": 0.41,
   "metrics": {
     "n_inputs": 200,
     "n_rows": 600,
-    "unparsed_count": 0,
+    "unparsed_count": 3,
     "truncation_rate": {
-      "value": 0.0,
+      "value": 0.028333,
       "ci95": [
-        0.0,
-        0.0
+        0.015,
+        0.041667
       ]
     },
     "repetition_ratio": {
-      "value": 0.999893,
+      "value": 0.999116,
       "ci95": [
-        0.99977,
-        0.999975
+        0.997418,
+        0.999979
       ]
     },
     "identifier_precision": {
-      "value": 0.202709,
+      "value": 0.190854,
       "ci95": [
-        0.192101,
-        0.212264
+        0.181489,
+        0.199679
       ]
     },
     "quote_precision": {
-      "value": 0.79242,
+      "value": 0.738815,
       "ci95": [
-        0.755111,
-        0.829316
+        0.713081,
+        0.765415
       ]
     },
     "verdict_distribution": {
-      "VULNERABLE": 0.87,
-      "SAFE": 0.095,
-      "INSUFFICIENT": 0.035,
-      "UNPARSED": 0.0
+      "VULNERABLE": 0.706667,
+      "SAFE": 0.165,
+      "INSUFFICIENT": 0.123333,
+      "UNPARSED": 0.005
     },
     "verdict_distribution_ci": {
       "VULNERABLE": {
-        "value": 0.87,
+        "value": 0.706667,
         "ci95": [
-          0.82,
-          0.915
+          0.655,
+          0.758375
         ]
       },
       "SAFE": {
-        "value": 0.095,
+        "value": 0.165,
         "ci95": [
-          0.059875,
-          0.135
+          0.125,
+          0.206667
         ]
       },
       "INSUFFICIENT": {
-        "value": 0.035,
+        "value": 0.123333,
         "ci95": [
-          0.015,
-          0.065
+          0.09,
+          0.158333
         ]
       },
       "UNPARSED": {
-        "value": 0.0,
+        "value": 0.005,
         "ci95": [
           0.0,
-          0.0
+          0.010042
         ]
       }
     },
     "verdict_counts": {
-      "VULNERABLE": 522,
-      "SAFE": 57,
-      "INSUFFICIENT": 21
+      "INSUFFICIENT": 74,
+      "VULNERABLE": 424,
+      "SAFE": 99,
+      "UNPARSED": 3
     },
     "bootstrap": {
       "seed": 20260918,
