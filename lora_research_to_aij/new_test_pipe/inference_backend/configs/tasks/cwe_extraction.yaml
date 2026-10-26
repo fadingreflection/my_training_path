@@ -1,0 +1,18 @@
+name: cwe_extraction
+description: "Дан C-код, вернуть JSON с explanation/frame/triplet/CWE"
+
+input:
+  type: code
+  format: c
+
+target:
+  type: cwe
+  format: normalized_cwe
+
+extractor:
+  input: "record['input']"
+  target: "record['CWE']"
+  completion: "record['completion']"
+  prebuilt: false
+
+sample_id_expr: "record.get('sample_id') or record.get('id')"

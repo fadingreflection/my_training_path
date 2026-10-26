@@ -1,0 +1,47 @@
+model_name_or_path: "../../models/base"
+data_path: "/home/afedotova/my_training_path/lora_research_to_aij/eda/train_sft.jsonl"
+val_data_path: "/home/afedotova/my_training_path/lora_research_to_aij/eda/val_sft.jsonl"
+holdout_data_path: "/home/afedotova/my_training_path/lora_research_to_aij/eda/val_eval.jsonl"
+
+output_dir: "output_trainpool_holdout"
+
+validation_split: 0.1
+test_split: 0.0   # holdout только как финальный тест, не из random split
+seed: 42
+max_seq_length: 2048
+
+num_train_epochs: 2
+per_device_train_batch_size: 1  
+per_device_eval_batch_size: 1
+gradient_accumulation_steps: 16
+learning_rate: 5e-4
+warmup_steps: 20
+weight_decay: 0.1
+logging_steps: 5
+save_steps: 5 #25 
+eval_steps: 5 #25 
+save_total_limit: 3
+load_best_model_at_end: true
+metric_for_best_model: "eval_loss"
+greater_is_better: false
+
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.2
+lora_target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+use_tensorboard: true
+report_to: "tensorboard"
+evaluate_on_test: true
+evaluate_on_train: true
+
+# 👇 ЭТА СТРОКА НОВАЯ
+response_template: "<|im_start|>assistant"
+resume_from_checkpoint: false 
+
+# Ранняя остановка
+early_stopping_patience: 3     # количество шагов без улучшения
+early_stopping_threshold: 0.0  # минимальное изменение для считаемого улучшения (0.0 – любое улучшение)
+eval_sample_size: null
+train_eval_sample_size: 0
+data_limit: 0

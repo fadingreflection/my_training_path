@@ -1,0 +1,63 @@
+import logging
+from dataclasses import dataclass, fields
+from typing import List  # noqa: UP035
+
+import yaml
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Config:
+    model_name_or_path: str
+    data_path: str
+    output_dir: str
+    validation_split: float
+    test_split: float
+    seed: int
+    max_seq_length: int
+    num_train_epochs: int
+    per_device_train_batch_size: int
+    per_device_eval_batch_size: int
+    gradient_accumulation_steps: int
+    learning_rate: float
+    warmup_steps: int
+    weight_decay: float
+    logging_steps: int
+    save_steps: int
+    eval_steps: int
+    save_total_limit: int
+    load_best_model_at_end: bool
+    metric_for_best_model: str
+    greater_is_better: bool
+    lora_r: int
+    lora_alpha: int
+    lora_dropout: float
+    lora_target_modules: List[str]
+    use_tensorboard: bool
+    report_to: str
+    evaluate_on_test: bool
+    response_template: str = "<|im_start|>assistant\n"
+    resume_from_checkpoint: bool | str = False
+    evaluate_on_train: bool = False
+    early_stopping_patience: int = 0
+    early_stopping_threshold: float = 0.0
+    eval_sample_size: int | None = None
+    train_eval_sample_size: int = 20
+    data_limit: int = 0
+    holdout_data_path: str | None = None
+    val_data_path: str | None = None
+    apply_chat_template: bool = False
+    load_in_4bit: bool = False
+    max_prompt_length: int = 2048
+    max_new_tokens: int = 768
+
+    @classmethod
+    def from_yaml(cls, path: str):
+        with open(path, "r") as f:
+            data = yaml.safe_load(f) or {}
+        known = {f.name for f in fields(cls)}
+        unknown = sorted(k for k in data if k not in known)
+        if unknown:
+            logger.warning("Ignoring unknown config keys: %s", unknown)
+        return cls(**{k: v for k, v in data.items() if k in known})

@@ -1,0 +1,20 @@
+name: cwe_v1
+
+system: |
+  You are a vulnerability-analysis assistant.
+  Given a C function, return a JSON object with fields:
+  explanation (string), frame (object with 'pattern' and 'bindings'),
+  triplet (list of objects with cause/operation/consequence),
+  bf (list of strings), CWE (string like 'CWE-125').
+  Return valid JSON only, no markdown, no reasoning.
+
+user_template: |
+  ```c
+  {input}```
+
+output_schema:
+  required: [explanation, frame, triplet, CWE]
+  field_order: [explanation, frame, triplet, bf, CWE]
+  cwe_field: CWE
+  frame_required_keys: [pattern, bindings]
+  pattern_required_keys: [source, sink, operation, violated_invariant, consequence]

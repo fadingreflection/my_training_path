@@ -1,0 +1,16 @@
+# tasks/cwe_prebuilt.yaml — если данные уже prompt/completion
+name: cwe_prebuilt
+description: "Данные уже в формате prompt/completion"
+
+input:
+  type: prompt_text
+  format: text
+
+target:
+  type: json
+  format: json
+
+extractor:
+  input: "record['prompt']"
+  target: "record['completion']"
+  prebuilt: true
